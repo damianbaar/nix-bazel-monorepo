@@ -1,0 +1,7 @@
+.idea
+.settings
+bazel-*
+target
+.classpath
+.project
+pom.xml
