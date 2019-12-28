@@ -1,10 +1,10 @@
-load("@bazel_common//tools/maven:pom_file.bzl", "pom_file")
+# load("@bazel_common//tools/maven:pom_file.bzl", "pom_file")
 load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
 
 package(default_visibility = ["//visibility:public"])
 
 local_deps = [
-    "//packages/module_a/java:module_a",
+    "@workspace//packages/module_a/java:module_a",
 ]
 
 workspace_deps = [
@@ -23,15 +23,12 @@ java_binary(
     deps = workspace_deps + local_deps,
 )
 
-load("@workspace//:tools/generate-pom.bzl", "generate_local_deps")
+load("@workspace//:tools/generate-pom.bzl", "pom_file")
 
 pom_file(
     name = "pom",
     substitutions = {
-        "local": generate_local_deps(
-            local_deps,
-        ),
-        "group_id": "com.example",
+        "group_id": "com.example.app_1",
         "name": "app",
     },
     targets = [

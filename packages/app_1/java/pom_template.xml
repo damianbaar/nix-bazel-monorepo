@@ -10,7 +10,6 @@
   <name>name</name>
 
   <dependencies>
-  local
   {generated_bzl_deps}
   </dependencies>
 </project>
