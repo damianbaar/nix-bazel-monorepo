@@ -14,3 +14,9 @@ org/apache/heron/downloader
 ----
 each module can carry some binary
 can produce docker
+
+----
+### TODO
+* generate pom for root as 
+* generate packages pom xml
+* generate pom with local deps
