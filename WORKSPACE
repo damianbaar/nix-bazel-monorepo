@@ -62,6 +62,6 @@ bazel_skylib_workspace()
 # load(":tools/helpers.bzl", "generate_local_deps")
 
 local_repository(
-    name = "workspace",
+    name = "root_workspace",
     path = ".",
 )

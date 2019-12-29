@@ -8,6 +8,9 @@ mkShell {
   buildInputs = [bazel bash maven jdk bazel-buildtools];
   shellHook = ''
     echo elo!
+    bazel build //...
+    echo "prepare poms"
+    echo "packages - autogenerte based on files"
   '';
 }
 

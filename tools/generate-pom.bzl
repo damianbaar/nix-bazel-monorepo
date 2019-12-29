@@ -17,13 +17,6 @@ INTERNAL = """
 </dependency>
 """.strip()
 
-# in:  //packages/module_a/java:module_a
-# out: <dependency>
-#         <groupId>com.example.packages</groupId>
-#         <artifactId>module_b</artifactId>
-#         <version>LOCAL-SNAPSHOT</version>
-#     </dependency>
-
 MavenInfo = provider(
     fields = {
         "maven_artifacts": """
@@ -34,7 +27,8 @@ MavenInfo = provider(
         The Maven coordinates of the direct dependencies, and the transitively exported targets, of
         this target.
         """,
-        "local_dependencies": "test",
+        "other_dependencies": """
+        """,
     },
 )
 
@@ -59,27 +53,28 @@ def _collect_maven_info_impl(_target, ctx):
         if tag.startswith(_MAVEN_COORDINATES_PREFIX):
             maven_artifacts.append(tag[len(_MAVEN_COORDINATES_PREFIX):])
 
-    local_artifacts = []
-    for dep in deps:
-        # print(dir(dep.label), dep.label.java, dep.label.package, dep.label.workspace_name, dep.label.workspace_root)
-        if dep.label.name == "module_a":
-            local_artifacts.append("com:{}:{}".format(dep.label.package, dep.label.name))
+    targets = [_get_label(target) for target in deps]
+    other_dependencies = []
 
-    # print("Deps", deps, exports, _maven_artifacts(deps + exports))
+    for label in targets:
+        if label.workspace_name != "maven":
+            other_dependencies.append(label)
+
     return [MavenInfo(
         maven_artifacts = depset(maven_artifacts, transitive = _maven_artifacts(exports)),
         maven_dependencies = depset([], transitive = _maven_artifacts(deps + exports)),
-        local_dependencies = local_artifacts,
+        other_dependencies = other_dependencies,
     )]
 
 _collect_maven_info = aspect(
     attr_aspects = [
         "deps",
         "exports",
+        "workspace",
     ],
     doc = """
-    Collects the Maven information for targets, their dependencies, and their transitive exports.
-    """,
+  Collects the Maven information for targets, their dependencies, and their transitive exports.
+  """,
     implementation = _collect_maven_info_impl,
 )
 
@@ -134,24 +129,30 @@ def _sort_artifacts(artifacts, prefixes):
 def _get_label(dep):
     return dep.label
 
+# in:  //packages/module_a/java:module_a
+# out: <dependency>
+#         <groupId>com.example.packages</groupId>
+#         <artifactId>module_b</artifactId>
+#         <version>LOCAL-SNAPSHOT</version>
+#     </dependency>
+
 def _pom_file(ctx):
     mvn_deps = depset(
         [],
         transitive = [target[MavenInfo].maven_dependencies for target in ctx.attr.targets],
     )
 
-    local_deps = [target[MavenInfo].local_dependencies for target in ctx.attr.targets]
-    _local_deps = []
+    deps = mvn_deps.to_list()
 
-    for ld in local_deps:
-        _local_deps.extend(ld)
+    for labels in [target[MavenInfo].other_dependencies for target in ctx.attr.targets]:
+        for label in labels:
+            deps.append("com:{}:{}".format(label.package, label.name))
+
+    print(deps)
 
     formatted_deps = []
 
-    deps = _sort_artifacts(mvn_deps.to_list(), ctx.attr.preferred_group_ids)
-    all_deps = (deps + _local_deps)
-
-    for dep in all_deps:
+    for dep in _sort_artifacts(deps, ctx.attr.preferred_group_ids):
         parts = dep.split(":")
         if ":".join(parts[0:2]) in ctx.attr.excluded_artifacts:
             continue
@@ -167,8 +168,6 @@ def _pom_file(ctx):
             fail("Unknown dependency format: %s" % dep)
         formatted_deps.append(template.format(*parts))
 
-    # ctx.attr.substitutions
-    # ctx.attr.template_file
     substitutions = {}
     substitutions.update(ctx.attr.substitutions)
     substitutions.update({
@@ -184,6 +183,7 @@ def _pom_file(ctx):
 pom_file = rule(
     implementation = _pom_file,
     attrs = {
+        "workspace": attr.string(default = "*"),
         "local_namespace": attr.string(),
         "template_file": attr.label(
             allow_single_file = True,
@@ -203,22 +203,9 @@ pom_file = rule(
     outputs = {"pom_file": "%{name}.xml"},
 )
 
-def generate_local_deps(src):
-    dep = src[0]
-    pathModule = dep.split(":")
-    parts = ([packages_group] + [pathModule[1]] + ["LOCAL-SNAPSHOT"])
-    return DEP_BLOCK.format(*parts)
-
-# def test(name, **kwargs):
-#     """Create a miniature of the src image.
-
-#     The generated file is prefixed with 'small_'.
-#     """
-#     native.genrule(
+# def pom(targets, name, template_file):
+#     pom_file(
 #         name = name,
-#         # srcs = [src],
-#         outs = [name],
-#         # outs = [name],
-#         cmd = "echo " + name + " > $@",
-#         **kwargs
+#         workspace = "root",
+#         targets = targets,
 #     )

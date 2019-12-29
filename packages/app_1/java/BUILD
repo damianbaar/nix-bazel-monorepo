@@ -1,13 +1,9 @@
-# load("@bazel_common//tools/maven:pom_file.bzl", "pom_file")
 load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
 
 package(default_visibility = ["//visibility:public"])
 
-local_deps = [
-    "@workspace//packages/module_a/java:module_a",
-]
-
-workspace_deps = [
+deps = [
+    "@root_workspace//packages/module_a/java:module_a",
     "@maven//:com_google_guava_guava",
     "@maven//:com_google_inject_guice",
     "@maven//:org_springframework_boot_spring_boot",
@@ -20,10 +16,10 @@ java_binary(
     srcs = glob(["src/main/java/com/example/app/*.java"]),
     main_class = "com.example.app.Runner",
     # resources = [],
-    deps = workspace_deps + local_deps,
+    deps = deps,
 )
 
-load("@workspace//:tools/generate-pom.bzl", "pom_file")
+load("@root_workspace//:tools/generate-pom.bzl", "pom_file")
 
 pom_file(
     name = "pom",
@@ -35,4 +31,16 @@ pom_file(
         "//packages/app_1/java:Runner",
     ],
     template_file = "pom_template.xml",
+    workspace = "root_workspace",
 )
+
+# pom(
+#     ["//packages/app_1/java:Runner"],
+#     "pom",
+#     "pom_template.xml",
+# )
+# substitutions = {
+#     "group_id": "com.example.app_1",
+#     "name": "app",
+# },
+# workspace = "root_workspace",
