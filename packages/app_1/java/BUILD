@@ -23,15 +23,17 @@ load("@root_workspace//:tools/generate-pom.bzl", "pom_file")
 
 pom_file(
     name = "pom",
-    substitutions = {
+    artifact_config = {
+        "workspace": "root_workspace",
         "group_id": "com.example.app_1",
+    },
+    substitutions = {
         "name": "app",
     },
     targets = [
         "//packages/app_1/java:Runner",
     ],
     template_file = "pom_template.xml",
-    workspace = "root_workspace",
 )
 
 # pom(

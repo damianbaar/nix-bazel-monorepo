@@ -1,6 +1,3 @@
-group = "com.example"
-packages_group = group + ".packages"
-
 DEP_BLOCK = """
 <dependency>
   <groupId>{0}</groupId>
@@ -17,7 +14,7 @@ INTERNAL = """
 </dependency>
 """.strip()
 
-MavenInfo = provider(
+JavaDependencyInfo = provider(
     fields = {
         "maven_artifacts": """
         The Maven coordinates for the artifacts that are exported by this target: i.e. the target
@@ -32,15 +29,16 @@ MavenInfo = provider(
     },
 )
 
-_EMPTY_MAVEN_INFO = MavenInfo(
+_EMPTY_MAVEN_INFO = JavaDependencyInfo(
     maven_artifacts = depset(),
     maven_dependencies = depset(),
+    other_dependencies = [],
 )
 
 _MAVEN_COORDINATES_PREFIX = "maven_coordinates="
 
 def _maven_artifacts(targets):
-    return [target[MavenInfo].maven_artifacts for target in targets if MavenInfo in target]
+    return [target[JavaDependencyInfo].maven_artifacts for target in targets if JavaDependencyInfo in target]
 
 def _collect_maven_info_impl(_target, ctx):
     tags = getattr(ctx.rule.attr, "tags", [])
@@ -60,7 +58,7 @@ def _collect_maven_info_impl(_target, ctx):
         if label.workspace_name != "maven":
             other_dependencies.append(label)
 
-    return [MavenInfo(
+    return [JavaDependencyInfo(
         maven_artifacts = depset(maven_artifacts, transitive = _maven_artifacts(exports)),
         maven_dependencies = depset([], transitive = _maven_artifacts(deps + exports)),
         other_dependencies = other_dependencies,
@@ -139,14 +137,23 @@ def _get_label(dep):
 def _pom_file(ctx):
     mvn_deps = depset(
         [],
-        transitive = [target[MavenInfo].maven_dependencies for target in ctx.attr.targets],
+        transitive = [target[JavaDependencyInfo].maven_dependencies for target in ctx.attr.targets],
     )
 
     deps = mvn_deps.to_list()
 
-    for labels in [target[MavenInfo].other_dependencies for target in ctx.attr.targets]:
+    version = ctx.var.get("pom_version", "LOCAL-SNAPSHOT")
+    workspace = ctx.attr.artifact_config.get("workspace")
+    group_id = ctx.attr.artifact_config.get("group_id")
+
+    print("workspace", ctx.attr.artifact_config, ctx.attr.artifact_config.get("workspace"))
+    # group = "com.example"
+    # packages_group = group + ".packages"
+
+    # TODO if in workspace?
+    for labels in [target[JavaDependencyInfo].other_dependencies for target in ctx.attr.targets]:
         for label in labels:
-            deps.append("com:{}:{}".format(label.package, label.name))
+            deps.append("%{}:{}:{}".format(label.package, label.name, version))
 
     print(deps)
 
@@ -183,7 +190,9 @@ def _pom_file(ctx):
 pom_file = rule(
     implementation = _pom_file,
     attrs = {
-        "workspace": attr.string(default = "*"),
+        "artifact_config": attr.string_dict(default = {
+            "workspace": "",
+        }),
         "local_namespace": attr.string(),
         "template_file": attr.label(
             allow_single_file = True,
