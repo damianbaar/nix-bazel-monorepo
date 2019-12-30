@@ -83,16 +83,17 @@ nixpkgs_git_repository(
     sha256 = "",  # optional sha to verify package integrity!
 )
 
+# INFO this is a repository
 nixpkgs_package(
-    name = "hello",
+    name = "nix-hello",
     attribute_path = "hello",
     nix_file_content = "import <nixpkgs> { config = {}; overlays = []; }",
     repository = "@nixpkgs",
 )
 
 nixpkgs_package(
-    name = "hello_2",
-    attribute_path = "hello",
+    name = "nix-jq",
+    attribute_path = "jq",
     repository = "@nixpkgs",
 )
 

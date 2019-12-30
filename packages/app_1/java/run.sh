@@ -6,4 +6,5 @@ for d in $RUNFILES/*/bin; do PATH="$PATH:$d"; done
 
 echo "Arguments:" $@
 which hello
+which jq
 hello
