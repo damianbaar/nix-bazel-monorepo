@@ -75,12 +75,15 @@ http_archive(
     urls = ["https://github.com/tweag/rules_nixpkgs/archive/v0.6.0.tar.gz"],
 )
 
-load("@io_tweag_rules_nixpkgs//nixpkgs:nixpkgs.bzl", "nixpkgs_git_repository", "nixpkgs_package")
+load("@io_tweag_rules_nixpkgs//nixpkgs:nixpkgs.bzl", "nixpkgs_git_repository", "nixpkgs_local_repository", "nixpkgs_package")
 
-nixpkgs_git_repository(
+nixpkgs_local_repository(
     name = "nixpkgs",
-    revision = "19.09",  # Any tag or commit hash
-    sha256 = "",  # optional sha to verify package integrity!
+    nix_file = "//:nix/nixpkgs.nix",
+    nix_file_deps = [
+        "//:nix/sources.nix",
+        "//:nix/sources.json",
+    ],
 )
 
 # INFO this is a repository

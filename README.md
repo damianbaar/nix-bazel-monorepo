@@ -7,7 +7,7 @@
 * each module can carry some binary
 * each module can produce docker
 * modules can be referenced locally and autocompletion works from `ide` perspective
-* fast incremental rebuilds & remote builds
+* fast incremental reproducible & remote builds
 
 ### TODO
 * generate pom for root as 
@@ -18,11 +18,12 @@
 * create pinned nixpkgs
 
 #### Stack
-* nixpkgs
-* bazel
-* niv
-* lorri
-* dir-env
+* `nixpkgs`
+* `bazel`
+* [`niv`](https://github.com/nmattia/niv)
+* `lorri`
+* `dir-env`
+* `java`
 
 #### Related articles
 * https://github.com/tweag/rules_nixpkgs
