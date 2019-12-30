@@ -10,12 +10,12 @@
 * fast incremental reproducible & remote builds
 
 ### TODO
-* generate pom for root as 
-* generate packages pom xml
-* generate pom with local deps - done
+* generate pom for root - not super important
+* generate packages pom xml - within modules dir
 * create sh scripts to run binary from nixpkgs rules - done
-* create custom nix script as a dependency of binary file for module
-* create pinned nixpkgs
+* create custom nix script as a dependency of binary file for module (done) with buildInputs
+* create pinned nixpkgs - done
+* generate pom with local deps - done
 
 #### Stack
 * `nixpkgs`

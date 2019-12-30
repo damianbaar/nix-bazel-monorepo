@@ -39,7 +39,7 @@ pom_file(
 
 sh_binary(
     name = "nix-hello",
-    srcs = ["run.sh"],
+    srcs = ["local-run.sh"],
     data = [
         "nix-jq",
         "@nix-hello//:bin",
@@ -49,6 +49,6 @@ sh_binary(
 
 sh_binary(
     name = "nix-jq",
-    srcs = ["run.sh"],
+    srcs = ["local-run.sh"],
     data = ["@nix-jq//:bin"],
 )
