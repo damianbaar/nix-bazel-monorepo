@@ -13,9 +13,10 @@
 * generate pom for root - not super important
 * generate packages pom xml - within modules dir
 * create sh scripts to run binary from nixpkgs rules - done
-* create custom nix script as a dependency of binary file for module (done) with buildInputs
+* create custom nix script as a dependency of binary file for module (done) with buildInputs (? - has to be defined manually)
 * create pinned nixpkgs - done
 * generate pom with local deps - done
+* shell - run bazel -> generate poms (bazel build + symlink)
 
 #### Stack
 * `nixpkgs`
