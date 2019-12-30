@@ -28,6 +28,5 @@ pom_file(
     targets = [
         ":Runner",
     ],
-    # how to externalize that file?
-    template_file = "pom_template.xml",
+    template_file = "@com_example//template:artifact_pom.xml",
 )

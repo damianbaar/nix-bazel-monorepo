@@ -150,7 +150,9 @@ def _pom_file(ctx):
     # WARNING too strong assumption
     artifact = ctx.label.package.split("/")
     parent_id = artifact[0]
-    artifact_id = artifact[1]
+    artifact_id = artifact[1] if len(artifact) > 1 else artifact[0]
+
+    is_package_parent = len(artifact) == 0
 
     for labels in [target[JavaDependencyInfo].other_dependencies for target in ctx.attr.targets]:
         for label in labels:

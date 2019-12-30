@@ -8,5 +8,5 @@ pom_file(
     targets = [
         # ":module_b",
     ],
-    template_file = "//template:packages_pom.xml",
+    template_file = "@com_example//template:packages_pom.xml",
 )
