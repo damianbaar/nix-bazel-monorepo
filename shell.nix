@@ -2,18 +2,28 @@
   nixpkgs ? import <nixos-unstable> {}
 }:
 with nixpkgs.pkgs;
+let
+  # get poms - for d in bazel-bin/**/pom.xml; do echo $d; done
+  bootstrap = writeScriptBin "bootstrap" ''
+  '';
+in
 mkShell {
-  # TODO bazel-watch
-  # TODO generate-poms -> bazel command
-  buildInputs = [bazel bash maven jdk bazel-buildtools];
-
+  buildInputs = [
+    bazel 
+    bash 
+    maven 
+    jdk 
+    bazel-buildtools
+    bazel-watcher
+    bootstrap
+    ];
+  # BAZEL_OUTPUT
   # TODO find all pom.xml
   # for d in $RUNFILES/*/bin; do PATH="$PATH:$d"; done
   shellHook = ''
     echo elo!
     bazel build //...
-    echo "prepare poms"
-    echo "packages - autogenerte based on files"
+    for d in bazel-bin/**/pom.xml; do echo $d; done
   '';
 }
 

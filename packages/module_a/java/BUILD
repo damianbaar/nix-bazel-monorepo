@@ -1,5 +1,5 @@
 load("@bazel_common//tools/maven:pom_file.bzl", "pom_file")
-load("@com_example//:tools/generate-pom.bzl", "pom_file")
+load("@com_example//bazel:rules/generate-pom.bzl", "pom_file")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,5 +17,5 @@ pom_file(
     targets = [
         ":module_a",
     ],
-    template_file = "@com_example//template:artifact_pom.xml",
+    template_file = "//bazel/template:artifact_pom.xml",
 )
