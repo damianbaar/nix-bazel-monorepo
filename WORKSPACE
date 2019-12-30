@@ -1,3 +1,5 @@
+workspace(name = "com_example")
+
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 RULES_JVM_EXTERNAL_TAG = "3.0"
@@ -65,3 +67,42 @@ local_repository(
     name = "root_workspace",
     path = ".",
 )
+
+http_archive(
+    name = "io_tweag_rules_nixpkgs",
+    sha256 = "f5af641e16fcff5b24f1a9ba5d93cab5ad26500271df59ede344f1a56fc3b17d",
+    strip_prefix = "rules_nixpkgs-0.6.0",
+    urls = ["https://github.com/tweag/rules_nixpkgs/archive/v0.6.0.tar.gz"],
+)
+
+load("@io_tweag_rules_nixpkgs//nixpkgs:nixpkgs.bzl", "nixpkgs_git_repository", "nixpkgs_package")
+
+nixpkgs_git_repository(
+    name = "nixpkgs",
+    revision = "19.09",  # Any tag or commit hash
+    sha256 = "",  # optional sha to verify package integrity!
+)
+
+nixpkgs_package(
+    name = "hello",
+    attribute_path = "hello",
+    nix_file_content = "import <nixpkgs> { config = {}; overlays = []; }",
+    repository = "@nixpkgs",
+)
+
+nixpkgs_package(
+    name = "hello_2",
+    attribute_path = "hello",
+    repository = "@nixpkgs",
+)
+
+http_archive(
+    name = "rules_sh",
+    sha256 = "2613156e96b41fe0f91ac86a65edaea7da910b7130f2392ca02e8270f674a734",
+    strip_prefix = "rules_sh-0.1.0",
+    urls = ["https://github.com/tweag/rules_sh/archive/v0.1.0.tar.gz"],
+)
+
+load("@rules_sh//sh:repositories.bzl", "rules_sh_dependencies")
+
+rules_sh_dependencies()

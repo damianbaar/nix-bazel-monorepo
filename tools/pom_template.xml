@@ -3,14 +3,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>group_id</groupId>
+        <artifactId>parent_id</artifactId>
+        <version>{pom_version}</version>
+    </parent>
+
+    <groupId>com.example.{name}</groupId>
+    <artifactId>{name}</artifactId>
+
   <groupId>group_id</groupId>
-  <artifactId>my-app</artifactId>
   <version>{pom_version}</version>
 
-  <name>name</name>
+  <name>{name}</name>
 
   <dependencies>
-  local
   {generated_bzl_deps}
   </dependencies>
 </project>

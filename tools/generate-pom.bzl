@@ -146,16 +146,10 @@ def _pom_file(ctx):
     workspace = ctx.attr.artifact_config.get("workspace")
     group_id = ctx.attr.artifact_config.get("group_id")
 
-    print("workspace", ctx.attr.artifact_config, ctx.attr.artifact_config.get("workspace"))
-    # group = "com.example"
-    # packages_group = group + ".packages"
-
-    # TODO if in workspace?
     for labels in [target[JavaDependencyInfo].other_dependencies for target in ctx.attr.targets]:
         for label in labels:
-            deps.append("%{}:{}:{}".format(label.package, label.name, version))
-
-    print(deps)
+            if label.workspace_name == workspace:
+                deps.append("{}.{}:{}:{}".format(group_id, label.name, label.name, version))
 
     formatted_deps = []
 
@@ -196,7 +190,7 @@ pom_file = rule(
         "local_namespace": attr.string(),
         "template_file": attr.label(
             allow_single_file = True,
-            default = "pom_template.xml",
+            default = "tools/pom_template.xml",
         ),
         "substitutions": attr.string_dict(
             allow_empty = True,
@@ -211,10 +205,3 @@ pom_file = rule(
     },
     outputs = {"pom_file": "%{name}.xml"},
 )
-
-# def pom(targets, name, template_file):
-#     pom_file(
-#         name = name,
-#         workspace = "root",
-#         targets = targets,
-#     )

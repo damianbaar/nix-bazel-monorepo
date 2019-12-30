@@ -1,4 +1,4 @@
-package com.example.app;
+package com.example.app_1;
 
 import com.example.module_a.TestCaseRunner;
 

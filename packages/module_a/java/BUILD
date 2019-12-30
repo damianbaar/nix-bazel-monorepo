@@ -9,13 +9,13 @@ java_library(
     deps = ["//packages/module_b/java:module_b"],
 )
 
-pom_file(
-    name = "lib-pom",
-    substitutions = {
-        "group_id": "com.example",
-    },
-    targets = [
-        "//packages/module_a/java:module_a",
-    ],
-    template_file = "pom_template.xml",
-)
+# pom_file(
+#     name = "lib-pom",
+#     substitutions = {
+#         "group_id": "com.example",
+#     },
+#     targets = [
+#         "//packages/module_a/java:module_a",
+#     ],
+#     template_file = "//tools:pom_template.xml",
+# )
