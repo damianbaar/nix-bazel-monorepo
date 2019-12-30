@@ -1,3 +1,5 @@
+# _TEMPLATE = "" -> Label(_TEMPLATE),
+
 ARTIFACT = """
 <groupId>{0}.{1}</groupId>
 <artifactId>{2}</artifactId>
@@ -156,7 +158,7 @@ def _pom_file(ctx):
 
     for labels in [target[JavaDependencyInfo].other_dependencies for target in ctx.attr.targets]:
         for label in labels:
-            # WARNING check this condition
+            # WARNING / TODO check this condition
             # if label.workspace_name == workspace:
             deps.append("{}.{}:{}:{}".format(group_id, parent_id, label.name, version))
 
@@ -188,8 +190,7 @@ pom_file = rule(
     implementation = _pom_file,
     attrs = {
         "artifact_config": attr.string_dict(default = {
-            "workspace": "",
-            "parent_id": "",
+            "group_id": "",
         }),
         "local_namespace": attr.string(),
         "template_file": attr.label(
@@ -200,8 +201,12 @@ pom_file = rule(
             allow_empty = True,
             mandatory = False,
         ),
+        "folders": attr.label_list(
+            allow_files = True,
+            mandatory = False,
+        ),
         "targets": attr.label_list(
-            mandatory = True,
+            mandatory = False,
             aspects = [_collect_maven_info],
         ),
         "preferred_group_ids": attr.string_list(),

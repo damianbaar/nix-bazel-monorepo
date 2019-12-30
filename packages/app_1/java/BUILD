@@ -1,5 +1,6 @@
 load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
 load("@com_example//bazel:rules/generate-pom.bzl", "pom_file")
+load("//bazel:variables/project.bzl", "namespace")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,7 +24,7 @@ java_binary(
 pom_file(
     name = "pom",
     artifact_config = {
-        "group_id": "com.example",
+        "group_id": namespace,
     },
     targets = [
         ":Runner",
