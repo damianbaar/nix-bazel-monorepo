@@ -1,7 +1,7 @@
 ARTIFACT = """
-<groupId>{0}</groupId>
-<artifactId>{1}</artifactId>
-<version>{2}</version>
+<groupId>{0}.{1}</groupId>
+<artifactId>{2}</artifactId>
+<version>{3}</version>
 """
 
 DEP_BLOCK = """
@@ -147,10 +147,16 @@ def _pom_file(ctx):
     workspace = artifact_config.get("workspace")
     group_id = artifact_config.get("group_id")
 
+    # WARNING too strong assumption
+    artifact = ctx.label.package.split("/")
+    parent_id = artifact[0]
+    artifact_id = artifact[1]
+
     for labels in [target[JavaDependencyInfo].other_dependencies for target in ctx.attr.targets]:
         for label in labels:
-            if label.workspace_name == workspace:
-                deps.append("{}.{}:{}:{}".format(group_id, label.name, label.name, version))
+            # WARNING check this condition
+            # if label.workspace_name == workspace:
+            deps.append("{}.{}:{}:{}".format(group_id, parent_id, label.name, version))
 
     formatted_deps = []
 
@@ -158,22 +164,7 @@ def _pom_file(ctx):
         parts = dep.split(":")
         if ":".join(parts[0:2]) in ctx.attr.excluded_artifacts:
             continue
-        if len(parts) == 2:
-            template = DEP_BLOCK
-        if len(parts) == 3:
-            template = DEP_BLOCK
-        elif len(parts) == 5:
-            template = DEP_BLOCK
-            # template = CLASSIFIER_DEP_BLOCK # we dont need this - this is just for dev
-
-        else:
-            fail("Unknown dependency format: %s" % dep)
-        formatted_deps.append(template.format(*parts))
-
-    # WARNING too strong assumption
-    artifact = ctx.label.package.split("/")
-    parent_id = artifact[0]
-    artifact_id = artifact[1]
+        formatted_deps.append(DEP_BLOCK.format(*parts))
 
     version = ctx.var.get("pom_version", "LOCAL-SNAPSHOT")
 
@@ -182,7 +173,7 @@ def _pom_file(ctx):
     substitutions.update({
         "{generated_bzl_deps}": "\n".join(formatted_deps),
         "{pom_version}": version,
-        "{artifact_desc}": ARTIFACT.format(group_id, artifact_id, version),
+        "{artifact_desc}": ARTIFACT.format(group_id, parent_id, artifact_id, version),
         "{parent_pom}": PARENT.format(group_id, parent_id, version),
     })
     ctx.actions.expand_template(

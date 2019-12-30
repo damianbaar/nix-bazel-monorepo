@@ -1,4 +1,5 @@
 load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
+load("@com_example//:tools/generate-pom.bzl", "pom_file")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,18 +20,13 @@ java_binary(
     deps = deps,
 )
 
-load("@com_example//:tools/generate-pom.bzl", "pom_file")
-
 pom_file(
     name = "pom",
     artifact_config = {
         "group_id": "com.example",
     },
-    substitutions = {
-        "name": "app",
-    },
     targets = [
-        "//packages/app_1/java:Runner",
+        ":Runner",
     ],
     # how to externalize that file?
     template_file = "pom_template.xml",
