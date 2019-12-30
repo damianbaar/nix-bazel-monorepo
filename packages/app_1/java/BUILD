@@ -43,6 +43,7 @@ sh_binary(
     data = [
         "nix-jq",
         "@nix-hello//:bin",
+        "@nix-test-script//:bin",
     ],
 )
 

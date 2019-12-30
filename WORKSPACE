@@ -61,13 +61,31 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
 
-# load(":tools/helpers.bzl", "generate_local_deps")
+######
+# SH
+#####
+http_archive(
+    name = "rules_sh",
+    sha256 = "2613156e96b41fe0f91ac86a65edaea7da910b7130f2392ca02e8270f674a734",
+    strip_prefix = "rules_sh-0.1.0",
+    urls = ["https://github.com/tweag/rules_sh/archive/v0.1.0.tar.gz"],
+)
 
+load("@rules_sh//sh:repositories.bzl", "rules_sh_dependencies")
+
+rules_sh_dependencies()
+
+######
+# LOCAL
+#####
 local_repository(
     name = "root_workspace",
     path = ".",
 )
 
+######
+# NIX
+#####
 http_archive(
     name = "io_tweag_rules_nixpkgs",
     sha256 = "f5af641e16fcff5b24f1a9ba5d93cab5ad26500271df59ede344f1a56fc3b17d",
@@ -89,8 +107,14 @@ nixpkgs_local_repository(
 # INFO this is a repository
 nixpkgs_package(
     name = "nix-hello",
-    attribute_path = "hello",
-    nix_file_content = "import <nixpkgs> { config = {}; overlays = []; }",
+    nix_file_content = """
+      (import ./nix/default.nix {}).pkgs.hello
+    """,
+    nix_file_deps = [
+        "//:nix/default.nix",
+        "//:nix/sources.nix",
+        "//:nix/sources.json",
+    ],
     repository = "@nixpkgs",
 )
 
@@ -100,13 +124,15 @@ nixpkgs_package(
     repository = "@nixpkgs",
 )
 
-http_archive(
-    name = "rules_sh",
-    sha256 = "2613156e96b41fe0f91ac86a65edaea7da910b7130f2392ca02e8270f674a734",
-    strip_prefix = "rules_sh-0.1.0",
-    urls = ["https://github.com/tweag/rules_sh/archive/v0.1.0.tar.gz"],
+nixpkgs_package(
+    name = "nix-test-script",
+    nix_file_content = """
+      (import ./nix/default.nix {}).testScript
+    """,
+    nix_file_deps = [
+        "//:nix/default.nix",
+        "//:nix/sources.nix",
+        "//:nix/sources.json",
+    ],
+    repository = "@nixpkgs",
 )
-
-load("@rules_sh//sh:repositories.bzl", "rules_sh_dependencies")
-
-rules_sh_dependencies()
