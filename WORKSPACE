@@ -79,7 +79,7 @@ rules_sh_dependencies()
 # LOCAL
 #####
 local_repository(
-    name = "root_workspace",
+    name = "com_workspace",
     path = ".",
 )
 

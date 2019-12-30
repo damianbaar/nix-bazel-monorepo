@@ -3,7 +3,7 @@ load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
 package(default_visibility = ["//visibility:public"])
 
 deps = [
-    "@root_workspace//packages/module_a/java:module_a",
+    "@com_example//packages/module_a/java:module_a",
     "@maven//:com_google_guava_guava",
     "@maven//:com_google_inject_guice",
     "@maven//:org_springframework_boot_spring_boot",
@@ -19,12 +19,11 @@ java_binary(
     deps = deps,
 )
 
-load("@root_workspace//:tools/generate-pom.bzl", "pom_file")
+load("@com_example//:tools/generate-pom.bzl", "pom_file")
 
 pom_file(
     name = "pom",
     artifact_config = {
-        "workspace": "root_workspace",
         "group_id": "com.example",
     },
     substitutions = {

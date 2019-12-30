@@ -1,3 +1,9 @@
+ARTIFACT = """
+<groupId>{0}</groupId>
+<artifactId>{1}</artifactId>
+<version>{2}</version>
+"""
+
 DEP_BLOCK = """
 <dependency>
   <groupId>{0}</groupId>
@@ -6,13 +12,13 @@ DEP_BLOCK = """
 </dependency>
 """.strip()
 
-INTERNAL = """
-<dependency>
+PARENT = """
+<parent>
   <groupId>{0}</groupId>
   <artifactId>{1}</artifactId>
-  <version>sth.sth</version>
-</dependency>
-""".strip()
+  <version>{2}</version>
+</parent>
+"""
 
 JavaDependencyInfo = provider(
     fields = {
@@ -127,13 +133,6 @@ def _sort_artifacts(artifacts, prefixes):
 def _get_label(dep):
     return dep.label
 
-# in:  //packages/module_a/java:module_a
-# out: <dependency>
-#         <groupId>com.example.packages</groupId>
-#         <artifactId>module_b</artifactId>
-#         <version>LOCAL-SNAPSHOT</version>
-#     </dependency>
-
 def _pom_file(ctx):
     mvn_deps = depset(
         [],
@@ -143,8 +142,10 @@ def _pom_file(ctx):
     deps = mvn_deps.to_list()
 
     version = ctx.var.get("pom_version", "LOCAL-SNAPSHOT")
-    workspace = ctx.attr.artifact_config.get("workspace")
-    group_id = ctx.attr.artifact_config.get("group_id")
+
+    artifact_config = ctx.attr.artifact_config
+    workspace = artifact_config.get("workspace")
+    group_id = artifact_config.get("group_id")
 
     for labels in [target[JavaDependencyInfo].other_dependencies for target in ctx.attr.targets]:
         for label in labels:
@@ -158,22 +159,31 @@ def _pom_file(ctx):
         if ":".join(parts[0:2]) in ctx.attr.excluded_artifacts:
             continue
         if len(parts) == 2:
-            template = INTERNAL
+            template = DEP_BLOCK
         if len(parts) == 3:
             template = DEP_BLOCK
         elif len(parts) == 5:
             template = DEP_BLOCK
-            # template = CLASSIFIER_DEP_BLOCK
+            # template = CLASSIFIER_DEP_BLOCK # we dont need this - this is just for dev
 
         else:
             fail("Unknown dependency format: %s" % dep)
         formatted_deps.append(template.format(*parts))
 
+    # WARNING too strong assumption
+    artifact = ctx.label.package.split("/")
+    parent_id = artifact[0]
+    artifact_id = artifact[1]
+
+    version = ctx.var.get("pom_version", "LOCAL-SNAPSHOT")
+
     substitutions = {}
     substitutions.update(ctx.attr.substitutions)
     substitutions.update({
         "{generated_bzl_deps}": "\n".join(formatted_deps),
-        "{pom_version}": ctx.var.get("pom_version", "LOCAL-SNAPSHOT"),
+        "{pom_version}": version,
+        "{artifact_desc}": ARTIFACT.format(group_id, artifact_id, version),
+        "{parent_pom}": PARENT.format(group_id, parent_id, version),
     })
     ctx.actions.expand_template(
         template = ctx.file.template_file,
@@ -186,6 +196,7 @@ pom_file = rule(
     attrs = {
         "artifact_config": attr.string_dict(default = {
             "workspace": "",
+            "parent_id": "",
         }),
         "local_namespace": attr.string(),
         "template_file": attr.label(
