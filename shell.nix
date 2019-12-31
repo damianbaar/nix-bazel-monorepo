@@ -21,18 +21,16 @@ let
   '';
 
   folderWithPomQuery = ''
-    pom
     bazel query 'kind("pom_file", //...)' --output package
   '';
 
   generatePOMs = writeScriptBin "generate-poms" ''
     ${bazel}/bin/bazel build $(${pomQuery})
-    ${generateConfigs}/bin/generate-configs
   '';
 
   generateConfigs = writeShellScriptBin "generate-configs" ''
     JAVA_MODULES="$(echo $(${javaModulesQuery}))"
-    ${dhall}/bin/dhall <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")' > ${rootFolder}/bazel/variables/config.bzl
+    ${dhall-text}/bin/dhall-to-text <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")' > ${rootFolder}/bazel/variables/config.bzl
   '';
 
   # TODO cp poms
@@ -40,7 +38,6 @@ let
   # TODO get all poms alternative? bazel query 'kind("generated file", //foo:*)'
   # bazel query 'kind("pom_file", deps(//...))' --output package
   # JAVA_POMS=$(find bazel-bin/ -print | grep -i '.*[.]xml')
-  # BAZEL_BIN=$(bazel info bazel-bin)
 in
 mkShell {
   buildInputs = [
@@ -51,9 +48,11 @@ mkShell {
     bazel-buildtools
     dhall
     dhall-json
+    dhall-text
     bazel-watcher
     # dhall-haskell.dhall-lsp-server
     generatePOMs
+    generateConfigs
     figlet
     ];
   # BAZEL_OUTPUT
