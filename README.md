@@ -19,11 +19,12 @@
 * shell - run bazel -> generate poms (bazel build + symlink)
 
 #### Stack
-* `nixpkgs`
-* `bazel`
+* [`nixpkgs`](https://nixos.org/nixpkgs/download.html)
+* [`bazel`](https://bazel.build/)
 * [`niv`](https://github.com/nmattia/niv)
-* `lorri`
-* `dir-env`
+* [`lorri`](https://github.com/target/lorri)
+* [`dir-env`](https://direnv.net/)
+* [`dhall`](https://github.com/dhall-lang/dhall-lang)
 * `java`
 
 #### Related articles
