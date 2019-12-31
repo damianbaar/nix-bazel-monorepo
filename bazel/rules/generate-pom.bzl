@@ -201,7 +201,7 @@ pom_file = rule(
             allow_empty = True,
             mandatory = False,
         ),
-        "folders": attr.label_list(
+        "modules": attr.label_list(
             allow_files = True,
             mandatory = False,
         ),

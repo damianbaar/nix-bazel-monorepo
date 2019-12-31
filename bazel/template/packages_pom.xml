@@ -13,6 +13,6 @@
     <packaging>pom</packaging>
 
     <modules>
-    {dependencies}
+    {modules}
     </modules>
 </project>
