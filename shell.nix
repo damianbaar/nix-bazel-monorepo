@@ -34,7 +34,7 @@ let
 
     ${dhall-text}/bin/dhall-to-text \
       <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")("'$WORKSPACE'")' \
-      > ${rootFolder}/bazel/variables/config.bzl
+      > ${rootFolder}/config/__generated__/config.bzl
   '';
 
   copyPOMs = writeScriptBin "copy-poms" ''

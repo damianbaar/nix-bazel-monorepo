@@ -1,5 +1,5 @@
 load("//bazel:rules/generate-pom.bzl", "pom_file")
-load("//bazel:variables/config.bzl", "modules")
+load("//config:__generated__/config.bzl", "modules")
 
 pom_file(
     name = "pom",
