@@ -6,6 +6,9 @@ let bazel_config =
         λ(modules : Text)
       → λ(workspaces : Text)
       → ''
+        namespace = "com.example"
+        namespace_workspace = "com_example"
+
         modules = ["${modules}"]
         workspace = ["${workspaces}"]
         ''

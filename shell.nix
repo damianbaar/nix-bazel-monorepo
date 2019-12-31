@@ -68,6 +68,10 @@ mkShell {
 
   shellHook = ''
     figlet "bazel nix dhall"
+
+    generate-configs
+    generate-poms
+    copy-poms
   '';
 }
 

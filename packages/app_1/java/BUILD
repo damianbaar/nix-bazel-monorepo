@@ -1,6 +1,6 @@
 load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
 load("//bazel:rules/generate-pom.bzl", "pom_file")
-load("//bazel:variables/project.bzl", "namespace")
+load("//config:__generated__/config.bzl", "namespace")
 
 package(default_visibility = ["//visibility:public"])
 
