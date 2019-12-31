@@ -4,6 +4,6 @@ bazel-*
 target
 .classpath
 .project
-# pom.xml
+pom.xml
 /.gtm/
 temp
