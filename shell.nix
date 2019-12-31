@@ -1,5 +1,5 @@
 {
-  nixpkgs ? import <nixos-unstable> {}
+  nixpkgs ? import ./nix {},
 }:
 with nixpkgs.pkgs;
 with lib;
@@ -7,44 +7,40 @@ with builtins;
 let
   rootFolder = toString ./.;
 
+  # TODO move all of these to bazel-helpers
+  # TODO separate execution, query and output
   javaModulesQuery = ''
-    bazel query 'filter("packages", kind(java_*, deps(packages/...)))' --output package
+    ${bazel}/bin/bazel query \
+      'filter("packages", kind(java_*, deps(packages/...)))' \
+      --output package
   '';
 
   pomQuery = ''
-    bazel build $(bazel query 'kind(pom_file, deps(//...))')
+    ${bazel}/bin/bazel query \
+      'kind(pom_file, deps(//...))'
   '';
 
-  # TODO build only poms
+  folderWithPomQuery = ''
+    pom
+    bazel query 'kind("pom_file", //...)' --output package
+  '';
+
   generatePOMs = writeScriptBin "generate-poms" ''
-    ${pomQuery}
-    ${writeBazelVars}/bin/write-bazel-vars
+    ${bazel}/bin/bazel build $(${pomQuery})
+    ${generateConfigs}/bin/generate-configs
   '';
 
-# TODO get all poms alternative? bazel query 'kind("generated file", //foo:*)'
-  # TODO move all of these to bazel-helpers
-  # TODO rename variables/nix to variables/configuration or mvn_config
-
-  # TODO result bazel build //:pom //packages:pom //packages/app_1/java:pom
-  # BETTER bazel query 'kind(pom_file, deps(packages/...))'
-  # FROM whole WORKSPACE -> bazel query 'kind(pom_file, deps(//...))'
-  # INSTEAD OF (cd ${rootFolder} && bazel build //...)
-
-  # bazel query 'filter("packages", kind(java_*, deps(packages/...)))' --output package
-  # TODO get java libs bazel query 'kind(java_lib, deps(packages/...))'
-  # TODO bazel query 'filter("packages", kind(java_*, deps(packages/...)))' - only internals
-
-  writeBazelVars = writeShellScriptBin "write-bazel-vars" ''
-    JAVA_MODULES="$(echo ${javaModulesQuery} | tr '\n' ' ')"
-    dhall <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")' > ${rootFolder}/bazel/variables/config.bzl
+  generateConfigs = writeShellScriptBin "generate-configs" ''
+    JAVA_MODULES="$(echo $(${javaModulesQuery}))"
+    ${dhall}/bin/dhall <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")' > ${rootFolder}/bazel/variables/config.bzl
   '';
-    # cat <<EOF > ${rootFolder}/bazel/variables/nix.bzl
-    # modules = [$JAVA_MODULES]
-    # workspace = ["packages"]
-    # EOF
-  # alternative dhall <<< '(./config/config.dhall).bazel_config'
+
   # TODO cp poms
+  # QUERY?
+  # TODO get all poms alternative? bazel query 'kind("generated file", //foo:*)'
+  # bazel query 'kind("pom_file", deps(//...))' --output package
   # JAVA_POMS=$(find bazel-bin/ -print | grep -i '.*[.]xml')
+  # BAZEL_BIN=$(bazel info bazel-bin)
 in
 mkShell {
   buildInputs = [
@@ -56,6 +52,7 @@ mkShell {
     dhall
     dhall-json
     bazel-watcher
+    # dhall-haskell.dhall-lsp-server
     generatePOMs
     figlet
     ];
@@ -64,7 +61,7 @@ mkShell {
   # INFO isLorri = name=lorri-keep-env-hack-nix-shell (printenv | grep lorri)
   # TODO run generatePOMs if not in lorri
   shellHook = ''
-    figlet "bazel & nix"
+    figlet "bazel & nix & dhall"
   '';
 }
 

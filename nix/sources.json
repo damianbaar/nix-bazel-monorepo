@@ -1,4 +1,16 @@
 {
+    "dhall-haskell": {
+        "branch": "master",
+        "description": "Maintainable configuration files",
+        "homepage": "https://dhall-lang.org/",
+        "owner": "dhall-lang",
+        "repo": "dhall-haskell",
+        "rev": "b623ea7b360f84baf9183ddecdb3f4bfde177dcd",
+        "sha256": "14qxvqqimsmy0x2nvjdv4dccvh9vvdss23ndfrmghkhmg4397sw7",
+        "type": "tarball",
+        "url": "https://github.com/dhall-lang/dhall-haskell/archive/b623ea7b360f84baf9183ddecdb3f4bfde177dcd.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "niv": {
         "branch": "master",
         "description": "Easy dependency management for Nix projects",

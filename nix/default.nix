@@ -2,6 +2,7 @@
 with
   { overlay = self: super:
       { niv = import sources.niv {};    
+        dhall-haskell = import sources.dhall-haskell;
         testScript = super.writeScriptBin "test-script-nix" ''
           echo "I'm from Nix!"
         '';
