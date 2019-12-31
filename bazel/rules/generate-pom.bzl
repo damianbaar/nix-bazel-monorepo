@@ -170,7 +170,9 @@ def _pom_file(ctx):
             continue
         formatted_deps.append(DEP_BLOCK.format(*parts))
 
-    version = ctx.var.get("pom_version", "LOCAL-SNAPSHOT")
+    formatted_modules = []
+    for module in ctx.attr.modules:
+        formatted_modules.append(module)
 
     substitutions = {}
     substitutions.update(ctx.attr.substitutions)
@@ -179,6 +181,7 @@ def _pom_file(ctx):
         "{pom_version}": version,
         "{artifact_desc}": ARTIFACT.format(group_id, parent_id, artifact_id, version),
         "{parent_pom}": PARENT.format(group_id, parent_id, version),
+        "{modules}": "\n".join(formatted_modules),
     })
     ctx.actions.expand_template(
         template = ctx.file.template_file,
@@ -201,8 +204,7 @@ pom_file = rule(
             allow_empty = True,
             mandatory = False,
         ),
-        "modules": attr.label_list(
-            allow_files = True,
+        "modules": attr.string_list(
             mandatory = False,
         ),
         "targets": attr.label_list(

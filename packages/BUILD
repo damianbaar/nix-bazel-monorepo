@@ -1,11 +1,12 @@
 load("//bazel:rules/generate-pom.bzl", "pom_file")
+load("//bazel:variables/config.bzl", "modules")
 
 pom_file(
     name = "pom",
     artifact_config = {
         "group_id": "com.example",
     },
-    targets = [],
+    modules = modules,
     template_file = "//bazel/template:packages_pom.xml",
 )
 
