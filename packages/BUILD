@@ -1,4 +1,4 @@
-load("@com_example//bazel:rules/generate-pom.bzl", "pom_file")
+load("//bazel:rules/generate-pom.bzl", "pom_file")
 
 pom_file(
     name = "pom",

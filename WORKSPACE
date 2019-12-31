@@ -77,14 +77,6 @@ load("@rules_sh//sh:repositories.bzl", "rules_sh_dependencies")
 rules_sh_dependencies()
 
 ######
-# LOCAL
-#####
-local_repository(
-    name = "com_workspace",
-    path = ".",
-)
-
-######
 # NIX
 #####
 http_archive(

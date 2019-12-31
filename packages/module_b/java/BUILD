@@ -1,4 +1,4 @@
-load("@com_example//bazel:rules/generate-pom.bzl", "pom_file")
+load("//bazel:rules/generate-pom.bzl", "pom_file")
 
 package(default_visibility = ["//visibility:public"])
 
