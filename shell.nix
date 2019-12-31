@@ -33,11 +33,15 @@ let
     ${dhall-text}/bin/dhall-to-text <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")' > ${rootFolder}/bazel/variables/config.bzl
   '';
 
-  # TODO cp poms
-  # QUERY?
-  # TODO get all poms alternative? bazel query 'kind("generated file", //foo:*)'
-  # bazel query 'kind("pom_file", deps(//...))' --output package
-  # JAVA_POMS=$(find bazel-bin/ -print | grep -i '.*[.]xml')
+  copyPOMs = writeScriptBin "copy-poms" ''
+    POMS=$(find bazel-bin/ -print | grep -i '.*[.]xml')
+
+    for source in $POMS
+    do
+      target=$(echo $source | sed 's/^[^/]*\///')
+      install -m 0777 $source $target
+    done
+  '';
 in
 mkShell {
   buildInputs = [
@@ -51,14 +55,13 @@ mkShell {
     dhall-text
     bazel-watcher
     # dhall-haskell.dhall-lsp-server
+    figlet
+
     generatePOMs
     generateConfigs
-    figlet
-    ];
-  # BAZEL_OUTPUT
-  # for d in $RUNFILES/*/bin; do PATH="$PATH:$d"; done
-  # INFO isLorri = name=lorri-keep-env-hack-nix-shell (printenv | grep lorri)
-  # TODO run generatePOMs if not in lorri
+    copyPOMs
+  ];
+
   shellHook = ''
     figlet "bazel nix dhall"
   '';

@@ -1,8 +1,8 @@
 Bazel & Nix & Dhall Monorepo example
 ------
-`nix` for reproducibility and isolated environment 
-`bazel` for fast incremental rebuilds and module `query` system 
-`dhall` for converting and spread configuration to targets, like `nix`, `bazel`.
+* `nix` for reproducibility and isolated environment 
+* `bazel` for fast incremental rebuilds and module `query` system 
+* `dhall` for converting and spread configuration to targets, like `nix`, `bazel`.
 
 ### Features & Integration
 * `ide` integration - `bazel` does not work pretty well with `ide`'s - there is custom `pom` generation based on `bazel-tools/pom.bzl` which generate local deps as well, so from `ide` perspective all are treated as `maven` dependencies
