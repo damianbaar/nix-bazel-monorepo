@@ -4,8 +4,8 @@
 let bazel_config =
         λ(val : Text)
       → ''
-          modules = ["${val}"]
-          workspace = ["packages", "${val}"]
+        modules = ["${val}"]
+        workspace = ["packages", "${val}"]
         ''
 
 in  { bazel_config = bazel_config }
