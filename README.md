@@ -24,8 +24,9 @@ Bazel & Nix & Dhall Monorepo example
 #### Related articles
 * https://github.com/tweag/rules_nixpkgs
 
-#### Caveats
-* https://github.com/dhall-lang/dhall-haskell/releases
+#### Caveats / Limitations
+* lsp from binary not from nix - https://github.com/dhall-lang/dhall-haskell/releases
+* `nixpkgs` on [`catalina`](https://github.com/NixOS/nixpkgs/issues/63918#issuecomment-506955354), [related](https://github.com/NixOS/nix/issues/2925), [fixes](https://github.com/holochain/docs-pages/issues/149)
 
 ### TODO
 * create custom nix script as a dependency of binary file for module (done) with buildInputs (? - has to be defined manually)
