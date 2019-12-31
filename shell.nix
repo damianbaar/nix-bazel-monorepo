@@ -30,7 +30,11 @@ let
 
   generateConfigs = writeShellScriptBin "generate-configs" ''
     JAVA_MODULES="$(echo $(${javaModulesQuery}))"
-    ${dhall-text}/bin/dhall-to-text <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")' > ${rootFolder}/bazel/variables/config.bzl
+    WORKSPACE="packages"
+
+    ${dhall-text}/bin/dhall-to-text \
+      <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")("'$WORKSPACE'")' \
+      > ${rootFolder}/bazel/variables/config.bzl
   '';
 
   copyPOMs = writeScriptBin "copy-poms" ''

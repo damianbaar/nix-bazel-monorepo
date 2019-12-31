@@ -2,10 +2,11 @@
 --       https://prelude.dhall-lang.org/v11.1.0/package.dhall sha256:99462c205117931c0919f155a6046aec140c70fb8876d208c7c77027ab19c2fa
 
 let bazel_config =
-        λ(val : Text)
+        λ(modules : Text)
+      → λ(workspaces : Text)
       → ''
-        modules = ["${val}"]
-        workspace = ["packages"]
+        modules = ["${modules}"]
+        workspace = ["${workspaces}"]
         ''
 
 in  { bazel_config = bazel_config }
