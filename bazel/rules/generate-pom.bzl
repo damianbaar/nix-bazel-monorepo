@@ -22,6 +22,10 @@ PARENT = """
 </parent>
 """
 
+MODULE = """
+  <module>{0}</module>
+"""
+
 JavaDependencyInfo = provider(
     fields = {
         "maven_artifacts": """
@@ -172,7 +176,7 @@ def _pom_file(ctx):
 
     formatted_modules = []
     for module in ctx.attr.modules:
-        formatted_modules.append(module)
+        formatted_modules.append(MODULE.format(module))
 
     substitutions = {}
     substitutions.update(ctx.attr.substitutions)
