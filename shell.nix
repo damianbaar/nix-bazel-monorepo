@@ -53,26 +53,22 @@ let
       install -m 0777 $source $target
     done
   '';
+    deps = import ./preloaded_deps.nix {
+      inherit nixpkgs;
+    };
 in
 mkShell {
   DOCKER_BUILDKIT=1;
 
   buildInputs = [
-    bazel 
-    bash 
-    jdk 
-    bazel-buildtools
     # dhall
     # dhall-json
     # dhall-text
-    bazel-watcher
     # dhall-haskell.dhall-lsp-server
-    figlet
-
     # generatePOMs
     # generateConfigs
     # copyPOMs
-  ];
+  ] + deps;
 
   shellHook = ''
     figlet "bazel nix dhall"
