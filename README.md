@@ -35,4 +35,5 @@ Bazel & Nix & Dhall Monorepo example
 ### nix shell in docker via bazel
 * `bazel build //:nix-shell.tar`
 * `docker load < bazel-bin/nix-shell.tar`
-* `docker run -it bazel:nix-shell`
+* `docker run -it -v $(PWD):/workspace bazel:nix-shell` or in persistent mode
+* `docker run -d -v $(PWD):/workspace bazel:nix-shell` and then `docker exec -it <container_name_docker_ps> nix-shell`

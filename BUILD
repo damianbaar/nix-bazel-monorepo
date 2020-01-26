@@ -42,7 +42,7 @@ container_image(
         "443",
     ],
     # symlinks = {},
-    # volumes = ["/"],
+    volumes = ["/workspace"],
     # entrypoint = ["/entrypoint.sh"],
     # cmd = ["/run.sh"],
     # files = ["entrypoint.sh",
