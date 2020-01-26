@@ -53,9 +53,9 @@ let
       install -m 0777 $source $target
     done
   '';
-    deps = import ./preloaded_deps.nix {
+    deps = (builtins.attrValues (import ./nix/preloaded_deps.nix {
       inherit nixpkgs;
-    };
+    }));
 in
 mkShell {
   DOCKER_BUILDKIT=1;
@@ -68,7 +68,7 @@ mkShell {
     # generatePOMs
     # generateConfigs
     # copyPOMs
-  ] + deps;
+  ] ++ deps;
 
   shellHook = ''
     figlet "bazel nix dhall"

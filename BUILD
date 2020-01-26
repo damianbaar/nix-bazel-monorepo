@@ -32,9 +32,9 @@ container_image(
         "INPUT": "inputFolder",
         "OUTPUT": "outputFolder",
     },
-    files = [
-        ":repo",
-    ],
+    # files = [
+    #     ":repo",
+    # ],
     labels = {"maintainer": "damian.baar"},
     workdir = "/workspace",
     ports = [
