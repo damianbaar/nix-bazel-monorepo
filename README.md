@@ -31,3 +31,8 @@ Bazel & Nix & Dhall Monorepo example
 ### TODO
 * create custom nix script as a dependency of binary file for module (done) with buildInputs (? - has to be defined manually)
 * shell - run bazel -> generate poms (bazel build + symlink)
+
+### nix shell in docker via bazel
+* `bazel build //:nix-shell.tar`
+* `docker load < bazel-bin/nix-shell.tar`
+* `docker run -it bazel:nix-shell`

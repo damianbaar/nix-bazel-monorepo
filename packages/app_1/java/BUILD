@@ -1,5 +1,6 @@
 load("@rules_java//java:defs.bzl", "java_binary", "java_library", "java_test")
 load("//bazel:rules/generate-pom.bzl", "pom_file")
+load("//bazel:rules/classpath.bzl", "eclipse_project")
 load("//config:__generated__/config.bzl", "namespace")
 
 package(default_visibility = ["//visibility:public"])
@@ -30,4 +31,10 @@ pom_file(
         ":Runner",
     ],
     template_file = "//bazel/template:artifact_pom.xml",
+)
+
+eclipse_project(
+    name = "ep",
+    project_name = "pkg2",
+    deps = [":Runner"],
 )

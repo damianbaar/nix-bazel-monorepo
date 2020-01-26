@@ -50,6 +50,14 @@ _EMPTY_MAVEN_INFO = JavaDependencyInfo(
 _MAVEN_COORDINATES_PREFIX = "maven_coordinates="
 
 def _maven_artifacts(targets):
+    _jars = [[target, target[JavaInfo].outputs.jars] for target in targets]
+    jars = []
+
+    for (t, _jar) in _jars:
+        for jar in _jar:
+            jars.append((str(t.label), jar.class_jar.path))
+
+    print(jars)
     return [target[JavaDependencyInfo].maven_artifacts for target in targets if JavaDependencyInfo in target]
 
 def _collect_maven_info_impl(_target, ctx):

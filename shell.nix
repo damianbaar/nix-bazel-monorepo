@@ -1,5 +1,6 @@
 {
-  nixpkgs ? import ./nix {},
+  system ? builtins.currentSystem,
+  nixpkgs ? import ./nix { inherit system; },
 }:
 with nixpkgs.pkgs;
 with lib;
@@ -28,12 +29,18 @@ let
     ${bazel}/bin/bazel build $(${pomQuery})
   '';
 
+  # TODO as dhall is handling env vars
+  # move JAVA_MODULES to .direnv and read from there
+  # all find has to be in array format - as dhall does not support string split
+
+  # TOOO for loop over files *-config.dhall
   generateConfigs = writeShellScriptBin "generate-configs" ''
-    JAVA_MODULES="$(echo $(${javaModulesQuery}))"
+    JAVA_MODULES="$(echo $(${javaModulesQuery}) | sed -e 's/\ /,/')"
+    export JAVA_MODULES_2=$(${javaModulesQuery})
     WORKSPACE="packages"
 
     ${dhall-text}/bin/dhall-to-text \
-      <<< '(./config/config.dhall).bazel_config("'$JAVA_MODULES'")("'$WORKSPACE'")' \
+      <<< '(./config/config.dhall).bazel_config { modules = ["'$JAVA_MODULES'"], workspaces = ["'$WORKSPACE'"]}' \
       > ${rootFolder}/config/__generated__/config.bzl
   '';
 
@@ -48,30 +55,28 @@ let
   '';
 in
 mkShell {
+  DOCKER_BUILDKIT=1;
+
   buildInputs = [
     bazel 
     bash 
-    maven 
     jdk 
     bazel-buildtools
-    dhall
-    dhall-json
-    dhall-text
+    # dhall
+    # dhall-json
+    # dhall-text
     bazel-watcher
     # dhall-haskell.dhall-lsp-server
     figlet
 
-    generatePOMs
-    generateConfigs
-    copyPOMs
+    # generatePOMs
+    # generateConfigs
+    # copyPOMs
   ];
 
   shellHook = ''
     figlet "bazel nix dhall"
-
-    generate-configs
-    generate-poms
-    copy-poms
   '';
+    # generate-configs
 }
 

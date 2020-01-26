@@ -1,4 +1,4 @@
-{ sources ? import ./sources.nix }:     
+{ sources ? import ./sources.nix, system ? builtins.currentSystem }:     
 with
   { overlay = self: super:
       { niv = import sources.niv {};    
@@ -6,6 +6,7 @@ with
         testScript = super.writeScriptBin "test-script-nix" ''
           echo "I'm from Nix!"
         '';
+        nix-container-overlay = (import "${sources.nix-container-images}/overlay.nix");
         testScriptWithDeps = 
           let
             name = "test-script-with-deps-nix";
@@ -25,4 +26,7 @@ with
       };
   };
 import sources.nixpkgs
-  { overlays = [ overlay ] ; config = {}; }
+  { 
+    inherit system;
+    overlays = [ overlay ] ; 
+  }

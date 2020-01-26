@@ -10,7 +10,7 @@ pom_file(
     template_file = "//bazel/template:packages_pom.xml",
 )
 
-# get deps from build
+# get deps from build -> query
 # get folders from shell
 genrule(
     name = "gen_zip",

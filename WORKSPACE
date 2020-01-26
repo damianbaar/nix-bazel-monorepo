@@ -129,3 +129,53 @@ nixpkgs_package(
     ],
     repository = "@nixpkgs",
 )
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "dc97fccceacd4c6be14e800b2a00693d5e8d07f69ee187babfd04a80a9f8e250",
+    strip_prefix = "rules_docker-0.14.1",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.14.1/rules_docker-v0.14.1.tar.gz"],
+)
+
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+
+container_repositories()
+
+# This is NOT needed when going through the language lang_image
+# "repositories" function(s).
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
+load("@io_bazel_rules_docker//contrib:dockerfile_build.bzl", "dockerfile_image")
+
+dockerfile_image(
+    name = "nix_custom_image",
+    dockerfile = "//:Dockerfile",
+    # build_args
+    # docker path
+    # vars
+)
+
+container_pull(
+    name = "nix_image",
+    registry = "index.docker.io",
+    repository = "lnl7/nix",
+    digest = "sha256:ce464ba56607781dea11bf7e1624b17391f7026d7335b84081627eb52f563c1e",
+)
+
+# docker_pull(
+#     name = "nix-docker",
+#     # 'tag' is also supported, but digest is encouraged for reproducibility.
+#     # digest = "sha256:deadbeef",
+#     registry = "index.docker.io",
+#     repository = "lnl7/nix",
+#     tag = "2.2",
+# )
